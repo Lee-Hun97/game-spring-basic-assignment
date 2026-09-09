@@ -62,6 +62,12 @@ public class Game {
         this.status = status;
     }
 
+    public void updateName(
+            String playerName
+    ){
+        this.playerName = playerName;
+    }
+
     public boolean isFinished() {
         return status != GameStatus.PLAYING;
     }
