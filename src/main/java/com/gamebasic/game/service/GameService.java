@@ -138,10 +138,9 @@ public class GameService {
     // TODO (Lv 8): 게임 삭제
     @Transactional
     public void deleteGame(Long gameId) {
-        List<Game> list = gameRepository.findAll();
         Game game = findGame(gameId);
+        //Game game = gameRepository.findById(gameId); -> 왜 오류가 나는가?
 
-        runCardRepository.deleteAllByGame(game);
-        list.remove(game);
+        gameRepository.delete(game);
     }
 }
