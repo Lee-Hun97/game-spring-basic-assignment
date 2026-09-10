@@ -59,6 +59,12 @@ public class GameService {
     @Transactional
     public GameDetailResponse updateProgress(Long gameId, ProgressRequest request) {
         Game game = findGame(gameId);
+        if(game.isFinished()){
+            throw new ResponseStatusException(
+                    HttpStatus.METHOD_NOT_ALLOWED,
+                    "허용되지않은 작업입니다.");
+        }
+
         game.updateProgress(
             request.getCurrentHp(),
             request.getCurrentFloor(),
@@ -130,7 +136,7 @@ public class GameService {
     @Transactional
     public void renameGame(Long gameId, RenameRequest request) {
         Game game = findGame(gameId);
-        game.updateName(
+        game.rename(
                 request.getPlayerName()
         );
     }
