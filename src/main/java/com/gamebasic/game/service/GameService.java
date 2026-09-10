@@ -1,5 +1,7 @@
 package com.gamebasic.game.service;
 
+import com.gamebasic.common.exception.GameFinishedException;
+import com.gamebasic.common.exception.GameNotFoundException;
 import com.gamebasic.game.dto.*;
 import com.gamebasic.game.entity.Game;
 import com.gamebasic.game.repository.GameRepository;
@@ -58,11 +60,18 @@ public class GameService {
 
     @Transactional
     public GameDetailResponse updateProgress(Long gameId, ProgressRequest request) {
-        Game game = findGame(gameId);
+//        Game game = findGame(gameId);
+//        if(game.isFinished()){
+//            throw new ResponseStatusException(
+//                    HttpStatus.METHOD_NOT_ALLOWED,
+//                    "허용되지않은 작업입니다.");
+//        }
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(
+                        () -> new GameNotFoundException(gameId)
+                );
         if(game.isFinished()){
-            throw new ResponseStatusException(
-                    HttpStatus.METHOD_NOT_ALLOWED,
-                    "허용되지않은 작업입니다.");
+            throw new GameFinishedException(gameId);
         }
 
         game.updateProgress(
