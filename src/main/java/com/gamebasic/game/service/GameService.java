@@ -25,7 +25,7 @@ public class GameService {
     private final GameRepository gameRepository;
     private final RunCardRepository runCardRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public GameDetailResponse createGame(CreateRequest request) {
         Game game = gameRepository.save(new Game(request.getPlayerName()));
         saveDeck(game, request.getDeck());
@@ -106,14 +106,17 @@ public class GameService {
 
         List<GameSummaryResponse> responses = new ArrayList<>();
 
+
         for(Game game:gameList){
+
             responses.add(new GameSummaryResponse(
                     game.getId(),
                     game.getPlayerName(),
                     game.getCurrentHp(),
                     game.getCurrentFloor(),
                     game.getPhase(),
-                    game.getStatus()
+                    game.getStatus(),
+                    runCardRepository.countByGame(game.getId())
             ));
         }
 

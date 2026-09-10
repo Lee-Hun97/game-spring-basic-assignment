@@ -5,6 +5,7 @@ import com.gamebasic.game.entity.GameStatus;
 import com.gamebasic.runcard.dto.CardResponse;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
