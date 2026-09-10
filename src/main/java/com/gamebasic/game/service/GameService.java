@@ -6,6 +6,7 @@ import com.gamebasic.game.dto.*;
 import com.gamebasic.game.entity.Game;
 import com.gamebasic.game.repository.GameRepository;
 import com.gamebasic.runcard.dto.CardResponse;
+import com.gamebasic.runcard.dto.DeckCount;
 import com.gamebasic.runcard.dto.RunCardRequest;
 import com.gamebasic.runcard.entity.RunCard;
 import com.gamebasic.runcard.repository.RunCardRepository;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -60,12 +62,6 @@ public class GameService {
 
     @Transactional
     public GameDetailResponse updateProgress(Long gameId, ProgressRequest request) {
-//        Game game = findGame(gameId);
-//        if(game.isFinished()){
-//            throw new ResponseStatusException(
-//                    HttpStatus.METHOD_NOT_ALLOWED,
-//                    "허용되지않은 작업입니다.");
-//        }
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(
                         () -> new GameNotFoundException(gameId)
@@ -103,12 +99,23 @@ public class GameService {
     @Transactional(readOnly = true)
     public List<GameSummaryResponse> getGames() {
         List<Game> gameList = gameRepository.findAll();
-
+        List<DeckCount> countList = runCardRepository.countByGames();
         List<GameSummaryResponse> responses = new ArrayList<>();
 
-
+//        for(Game game:gameList){
+//            responses.add(new GameSummaryResponse(
+//                    game.getId(),
+//                    game.getPlayerName(),
+//                    game.getCurrentHp(),
+//                    game.getCurrentFloor(),
+//                    game.getPhase(),
+//                    game.getStatus(),
+//                    game.getCreatedAt(),
+//                    game.getUpdatedAt(),
+//                    runCardRepository.countByGame(game.getId())
+//            ));
+//        }
         for(Game game:gameList){
-
             responses.add(new GameSummaryResponse(
                     game.getId(),
                     game.getPlayerName(),
@@ -116,7 +123,13 @@ public class GameService {
                     game.getCurrentFloor(),
                     game.getPhase(),
                     game.getStatus(),
-                    runCardRepository.countByGame(game.getId())
+                    game.getCreatedAt(),
+                    game.getUpdatedAt(),
+                    countList.stream()
+                            .filter(c -> c.getId().equals(game.getId()))
+                            .map(DeckCount::getDeckCount)
+                            .findFirst()
+                            .orElse(0L)
             ));
         }
 
